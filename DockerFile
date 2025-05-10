@@ -1,0 +1,27 @@
+FROM kong:3.7
+
+USER root
+
+# Instale ferramentas de build
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    libpcre3-dev \
+    luarocks \
+    gcc \
+    libssl-dev \
+    git \
+    unzip \
+    curl \
+    make
+
+# Instale dependências Lua
+RUN luarocks install lua-resty-jwt 0.2.3
+RUN luarocks install lua-cjson
+
+# Copie o plugin para dentro do container
+COPY kong /usr/local/share/lua/5.1/kong
+
+# Corrija permissões
+RUN chown -R kong:kong /usr/local/share/lua/5.1/kong
+
+USER kong
