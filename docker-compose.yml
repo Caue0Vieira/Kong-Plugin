@@ -33,11 +33,14 @@ services:
       - host.docker.internal:host-gateway
 
   db:
-    image: postgres:13-alpine
+    image: postgres:14
+    container_name: pg14-kong
     environment:
       POSTGRES_DB: kong
       POSTGRES_USER: kong
       POSTGRES_PASSWORD: kong
+    ports:
+      - "5432:5432"
     healthcheck:
       test:
         [
@@ -54,7 +57,7 @@ services:
 
   kong-migrations:
     image: kong:3.7
-    command: kong migrations bootstrap
+    command: /bin/sh -c "kong migrations up && kong migrations finish"
     environment:
       KONG_DATABASE: postgres
       KONG_PG_HOST: db
